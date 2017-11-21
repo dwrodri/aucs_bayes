@@ -27,11 +27,14 @@ def get_df(path):
     i = 0
     df = {}
     for dict_item in parse(path):
+        if i < 100000:
             df[i] = dict_item
             i += 1
+        else:
+            break
     # generate a DataFrame that has reviews and ratings
     desired = pd.DataFrame.from_dict(df, orient='columns').T  # transform the matrix since the data is "sideways" in the gzip
-    desired = desired.drop(['asin', 'helpful', 'reviewTime', 'reviewerID', 'reviewerName', 'summary', 'unixReviewTime'], axis=1)
+    desired = desired.drop(['asin', 'helpful', 'reviewTime', 'reviewerID', 'reviewerName', 'summary', 'unixReviewTime'], axis=1)  # strip unused data
     return desired
 
 
@@ -42,7 +45,7 @@ if __name__ == '__main__':
     reviews = dataframe.reviewText  # get messages
     labels = dataframe.label_num  # get labels
 
-    reviews_train, reviews_test, labels_train, labels_test = train_test_split(reviews, labels, random_state=1)
+    reviews_train, reviews_test, labels_train, labels_test = train_test_split(reviews, labels, random_state=1)  # split the data into testing and training
 
     vectorizer = CountVectorizer()  # this is required to convert text data
     training_document_term_matrix = vectorizer.fit_transform(reviews_train)  # generate document_term_matrix for training
