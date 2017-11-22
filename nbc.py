@@ -27,7 +27,7 @@ def get_df(path):
     i = 0
     df = {}
     for dict_item in parse(path):
-        if i < 100000:
+        if i < 2000:
             df[i] = dict_item
             i += 1
         else:
@@ -38,13 +38,7 @@ def get_df(path):
     return desired
 
 
-if __name__ == '__main__':
-    dataframe = get_df(argv[1]).sort_values(by='overall')  # load amazon reviews into a DataFrame
-    dataframe['label_num'] = dataframe.overall.map({5.0:1.0, 4.0:0.0, 3.0:0.0, 2.0:0.0, 1.0:0.0})  # split between 5-star an not 5-star
-
-    reviews = dataframe.reviewText  # get messages
-    labels = dataframe.label_num  # get labels
-
+def use_only_sample_data(reviews, labels):
     reviews_train, reviews_test, labels_train, labels_test = train_test_split(reviews, labels, random_state=1)  # split the data into testing and training
 
     vectorizer = CountVectorizer()  # this is required to convert text data
@@ -55,4 +49,13 @@ if __name__ == '__main__':
     classifier.fit(training_document_term_matrix, labels_train)  # train the classifier on the test_data
     label_predictions = classifier.predict(testing_document_term_matrix)  # run the test sample through the classifier
 
-    print(metrics.accuracy_score(labels_test, label_predictions))
+    print('Accuracy is: ' + str(metrics.accuracy_score(labels_test, label_predictions) * 100) + "%")
+
+
+if __name__ == '__main__':
+    dataframe = get_df(argv[1]).sort_values(by='overall')  # load amazon reviews into a DataFrame
+    dataframe['label_num'] = dataframe.overall.map({5.0:1.0, 4.0:0.0, 3.0:0.0, 2.0:0.0, 1.0:0.0})  # split between 5-star an not 5-star
+
+    reviews = dataframe.reviewText  # get messages
+    labels = dataframe.label_num  # get labels
+    use_only_sample_data(reviews, labels)
